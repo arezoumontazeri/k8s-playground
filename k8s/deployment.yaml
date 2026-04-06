@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: simple-fastapi
+  labels:
+    app: simple-fastapi
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: simple-fastapi
+  template:
+    metadata:
+      labels:
+        app: simple-fastapi
+    spec:
+      containers:
+        - name: app
+          image: arezoumontazeri/simple-fastapi:v1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+          env:
+            - name: APP_MODE
+              value: "dev"
+            - name: MODEL_NAME
+              value: "fake-model"
+            - name: RESPONSE_DELAY
+              value: "0"
+            - name: APP_READY
+              value: "true"
