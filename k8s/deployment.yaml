@@ -20,7 +20,7 @@ spec:
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8000
-          envForm:
+          envFrom:
             - configMapRef:
                name: api-config
             - secretRef:
