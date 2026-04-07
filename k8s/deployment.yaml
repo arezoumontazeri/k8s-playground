@@ -20,12 +20,8 @@ spec:
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8000
-          env:
-            - name: APP_MODE
-              value: "dev"
-            - name: MODEL_NAME
-              value: "fake-model"
-            - name: RESPONSE_DELAY
-              value: "0"
-            - name: APP_READY
-              value: "true"
+          envForm:
+            - configMapRef:
+               name: api-config
+            - secretRef:
+               name: api-secret
