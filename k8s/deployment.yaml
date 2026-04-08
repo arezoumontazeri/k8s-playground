@@ -16,12 +16,30 @@ spec:
     spec:
       containers:
         - name: app
-          image: arezoumontazeri/simple-fastapi:v1
+          image: arezoumontazeri/simple-fastapi:v2
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8000
-          envForm:
+          envFrom:
             - configMapRef:
                name: api-config
             - secretRef:
                name: api-secret
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: 8000
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: 8000
+            failureThreshold: 30
+            periodSeconds: 2
