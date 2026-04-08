@@ -1,47 +1,39 @@
-# Phase 2 - Kubernetes Probes
+# Phase 02 - Kubernetes Probes
 
 ## Goal
-Learn how Kubernetes determines whether an application is:
-- alive
-- ready to receive traffic
-- still starting up
+Understand how Kubernetes checks whether an application is alive, ready for traffic, and still starting up.
 
-## Topics
-- livenessProbe
-- readinessProbe
-- startupProbe
+## Probe types
 
-## Validation
-- Pod can be running but not Ready
-- Service should not send traffic to unready Pods
-- Observe probe events with kubectl describe
+### Liveness Probe
+Checks whether the container is still healthy.
+If it fails repeatedly, Kubernetes restarts the container.
 
+### Readiness Probe
+Checks whether the application is ready to receive traffic.
+If it fails, the Pod stays running but is removed from Service endpoints.
 
-## Final validation result
+### Startup Probe
+Gives slow-starting applications time to boot.
+Until it succeeds, Kubernetes delays normal liveness/readiness behavior.
 
-After fixing the readiness endpoint to return HTTP 503:
+## Implementation
+The Deployment uses:
+- `/healthz` for liveness
+- `/readyz` for readiness
+- `/healthz` for startup validation
 
-- New Pods remained `Running` but stayed `0/1 Ready`
-- The Deployment rollout did not complete
-- Old Pods remained active to serve traffic
-- Readiness probe failures were observed in `kubectl describe pod`
+## Validation steps
+1. Deploy the application with probes enabled
+2. Confirm Pods become `1/1 Ready`
+3. Set `APP_READY=false`
+4. Restart the Deployment
+5. Confirm Pods are `Running` but `0/1 Ready`
+6. Check `kubectl describe pod`
+7. Verify the Service does not route traffic to unready Pods
 
-This confirms that:
-- readinessProbe is working correctly
-- Kubernetes does not route traffic to unready Pods
-- rolling updates are blocked when new Pods are not ready
-
-## What I learned
-- Minimal containers often do not include debugging tools like curl
-- Readiness probe failure keeps Pods running but removes them from traffic
-- Rolling updates stop when new Pods are not ready
-- Old Pods are preserved to maintain availability
-- Kubernetes relies on HTTP status codes (503) for readiness failure
-
-
-
-## Common mistakes
-- Trying to use curl inside minimal containers without installing it
-- Assuming readiness failure will stop the container (it does not)
-- Ignoring the READY column and focusing only on STATUS
-
+## Key takeaway
+A running Pod is not necessarily a ready Pod.
+Readiness controls traffic.
+Liveness controls restarts.
+Startup prevents premature failure during boot.
