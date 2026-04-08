@@ -15,7 +15,11 @@ def healthz():
 def readyz():
     ready_flag = os.getenv("APP_READY", "true").lower()
     if ready_flag != "true":
-        return {"status": "not ready"}
+        return Response(
+            content='{"status":"not ready"}',
+            media_type="application/json",
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+        )
     return {"status": "ready"}
 
 @app.post("/echo")

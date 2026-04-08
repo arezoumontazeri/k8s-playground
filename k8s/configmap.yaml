@@ -6,4 +6,4 @@ data:
   APP_MODE: "dev"
   MODEL_NAME: "gateway"
   RESPONSE_DELAY: "0.1"
-  APP_READY: "true"
+  APP_READY: "false"
