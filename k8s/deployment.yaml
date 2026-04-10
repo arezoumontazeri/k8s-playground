@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: app
-          image: arezoumontazeri/simple-fastapi:v2
+          image: arezoumontazeri/simple-fastapi:v3
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8000
