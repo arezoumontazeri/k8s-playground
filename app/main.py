@@ -56,3 +56,51 @@ def slow():
     delay = float(os.getenv("RESPONSE_DELAY", "2"))
     time.sleep(delay)
     return {"status": "done", "delay": delay}
+
+@app.post("/consume-memory")
+def consume_memory(mb: int = 10):
+    chunk = b"x" * (mb * 1024 * 1024)
+    MEMORY_HOLDER.append(chunk)
+
+    rss_mb = _get_rss_mb()
+
+    return {
+        "status": "allocated",
+        "allocated_mb": mb,
+        "chunks": len(MEMORY_HOLDER),
+        "rss_mb": rss_mb,
+    }
+
+
+@app.post("/clear-memory")
+def clear_memory():
+    MEMORY_HOLDER.clear()
+
+    return {
+        "status": "cleared",
+        "chunks": len(MEMORY_HOLDER),
+        "rss_mb": _get_rss_mb(),
+    }
+
+
+@app.get("/metrics")
+def metrics():
+    return {
+        "rss_mb": _get_rss_mb(),
+        "chunks": len(MEMORY_HOLDER),
+        "uptime_seconds": int(time.time() - START_TIME),
+    }
+
+
+def _get_rss_mb():
+    try:
+        with open("/proc/self/status", "r") as f:
+            for line in f:
+                if line.startswith("VmRSS:"):
+                    parts = line.split()
+                    kb = int(parts[1])
+                    return round(kb / 1024, 2)
+    except Exception:
+        return None
+
+    return None
