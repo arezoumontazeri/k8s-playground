@@ -1,0 +1,8 @@
+## What I learned
+
+- `requests` are used by the Kubernetes scheduler to decide whether a Pod can fit on a node.
+- `limits` define the upper boundary of runtime resource consumption.
+- Exceeding a memory limit can cause container termination with `OOMKilled`.
+- CPU overuse usually results in throttling instead of process termination.
+- A Pod can be healthy at startup but still fail later under resource pressure.
+- Stress endpoints inside the application make resource behavior much easier to observe and understand.
